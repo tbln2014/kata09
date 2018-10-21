@@ -1,9 +1,9 @@
 package kata.timbahro.rules;
 
-import kata.timbahro.repository.IDiscountRuleRepository;
+import kata.timbahro.repository.DiscountRuleRepository;
 
 public interface IDiscountRuleRepositoryAware {
 
-	public void setDiscountRuleRepository(IDiscountRuleRepository ruleRepository);
+	public void setDiscountRuleRepository(DiscountRuleRepository ruleRepository);
 
 }

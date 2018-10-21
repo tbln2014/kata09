@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import kata.timbahro.model.Item;
 import kata.timbahro.model.ItemIdentity;
 import kata.timbahro.repository.DiscountRuleRepository;
-import kata.timbahro.repository.IDiscountRuleRepository;
 
 /**
  * Quantitative discount rule which allows to specify discounts based on the
@@ -24,7 +23,7 @@ public class QuantitiveDiscountRule implements IDiscountRule, IDiscountRuleRepos
 	private int expectedItemCount;
 	private BigDecimal discount;
 	private boolean singleDiscount;
-	private IDiscountRuleRepository ruleRepository;
+	private DiscountRuleRepository ruleRepository;
 
 	public QuantitiveDiscountRule(int expectedItemCount, boolean singleDiscount, BigDecimal discount) {
 		this.expectedItemCount = expectedItemCount;
@@ -42,7 +41,7 @@ public class QuantitiveDiscountRule implements IDiscountRule, IDiscountRuleRepos
 	}
 
 	@Override
-	public void setDiscountRuleRepository(IDiscountRuleRepository ruleRepository) {
+	public void setDiscountRuleRepository(DiscountRuleRepository ruleRepository) {
 		this.ruleRepository = ruleRepository;
 	}
 

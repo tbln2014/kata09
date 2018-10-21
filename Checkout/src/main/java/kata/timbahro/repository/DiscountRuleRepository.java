@@ -12,7 +12,7 @@ import kata.timbahro.model.ItemIdentity;
 import kata.timbahro.rules.IDiscountRule;
 import kata.timbahro.rules.IDiscountRuleRepositoryAware;
 
-public class DiscountRuleRepository implements IDiscountRuleRepository {
+public class DiscountRuleRepository {
 
 	private static final String ERR_ONLY_ONE_DISCOUNT_PER_ITEM = "Only one discount-option per item allowed.";
 	private Map<ItemIdentity, IDiscountRule> activeDiscounts = new LinkedHashMap<>();
@@ -38,7 +38,6 @@ public class DiscountRuleRepository implements IDiscountRuleRepository {
 		activeDiscounts.put(item, discountStrategyForItem);
 	}
 
-	@Override
 	public int getItemCount(ItemIdentity item) {
 		return itemsCounted.get(item).intValue();
 	}
