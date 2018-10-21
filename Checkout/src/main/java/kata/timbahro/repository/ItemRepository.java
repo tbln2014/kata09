@@ -9,10 +9,15 @@ import org.apache.commons.lang3.Validate;
 import kata.timbahro.model.Item;
 import kata.timbahro.model.ItemIdentity;
 
+/**
+ * 
+ * @author tbahro
+ */
 public class ItemRepository /** implements CrudRepository<Item, ItemIdentity> */
 {
 
-	private static final String ERR_UNIT_ALREADY_IN_STORAGE = "Given item (%s) can't be added to item storage because it is already present.";
+	public static final String ERR_UNIT_ALREADY_IN_STORAGE = "Given item (%s) can't be added to item storage because it is already present.";
+
 	private Map<ItemIdentity, Item> itemStorage = new ConcurrentHashMap<ItemIdentity, Item>();
 
 	public Optional<Item> findById(ItemIdentity id) {
