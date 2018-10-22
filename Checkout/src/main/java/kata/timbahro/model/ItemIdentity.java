@@ -4,6 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+/**
+ * Used to identify an item. Maybe changed to switch identification of items.
+ * 
+ * @author tbahro
+ */
+
 @Getter
 @AllArgsConstructor
 @EqualsAndHashCode

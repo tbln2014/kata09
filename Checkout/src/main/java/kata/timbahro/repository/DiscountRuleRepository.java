@@ -17,6 +17,14 @@ import kata.timbahro.model.ItemIdentity;
 import kata.timbahro.rules.IDiscountRule;
 import kata.timbahro.rules.IDiscountRuleRepositoryAware;
 
+/**
+ * Repository to organize relationship between items and their (optional)
+ * discount option. Discount for items without an explicit discount option will
+ * be handled by the default discount option, which is passed when this
+ * repository is initialized.
+ * 
+ * @author tbahro
+ */
 public class DiscountRuleRepository {
 
 	private static final String MSG_SINGLE_DISCOUNT = "Active discount for item %s (discount option: %s)";

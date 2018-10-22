@@ -4,6 +4,12 @@ import java.util.List;
 
 import lombok.Data;
 
+/**
+ * Used for serializing/deserializing items which can be scanned in store.
+ * 
+ * @author tbahro
+ */
+
 @Data
 public class CheckOutModel {
 
