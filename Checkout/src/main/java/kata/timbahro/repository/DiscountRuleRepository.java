@@ -19,6 +19,8 @@ import kata.timbahro.rules.IDiscountRuleRepositoryAware;
 
 public class DiscountRuleRepository {
 
+	private static final String MSG_SINGLE_DISCOUNT = "Active discount for item %s (discount option: %s)";
+	private static final String MSG_DEFAULT_DISCOUNT_AVAILABLE = "Default discount option currently avaiable for all items without special discout offers!%s%s%s";
 	private static final String ERR_ONLY_ONE_DISCOUNT_PER_ITEM = "Only one discount-option per item allowed.";
 	private transient Map<ItemIdentity, AtomicInteger> itemsCounted = new HashMap<>();
 	private List<ItemDiscount> activeDiscounts = new ArrayList<>();
@@ -57,15 +59,15 @@ public class DiscountRuleRepository {
 	@Override
 	public String toString() {
 		StringBuffer toString = new StringBuffer();
-		String defaultDiscount = defaultRule.toString();
+		String defaultDiscount = defaultRule.getDescription();
 		if (StringUtils.isNotBlank(defaultDiscount)) {
-			toString.append(String.format(
-					"Default discount option currently avaiable for all items without special discout offers!%s%s",
-					System.lineSeparator(), String.valueOf(defaultDiscount)));
+			toString.append(String.format(MSG_DEFAULT_DISCOUNT_AVAILABLE, System.lineSeparator(),
+					String.valueOf(defaultDiscount), System.lineSeparator()));
 		}
 		activeDiscounts.stream()
-				.forEach(d -> toString.append(String.format("Active discount for item %s (discount option: %s)",
-						d.getItem().getName(), d.getDiscount().getDescription()) + System.lineSeparator()));
+				.forEach(d -> toString.append(
+						String.format(MSG_SINGLE_DISCOUNT, d.getItem().getName(), d.getDiscount().getDescription())
+								+ System.lineSeparator()));
 		return toString.toString();
 	}
 

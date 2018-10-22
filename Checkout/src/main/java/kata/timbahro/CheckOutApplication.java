@@ -31,8 +31,8 @@ import kata.timbahro.rules.QuantitiveDiscountRule;
 public class CheckOutApplication {
 
 	private static final String MSG_INIT_ITEMS = "Loading default items from configuration file %s.";
-	private static final String MSG_INIT_DISCOUNT_RULES = "Loading default discount rules.";
-	private static final String MSG_DISPLAY_TOTAL = "New Total: %s";
+	private static final String MSG_INIT_DISCOUNT_RULES = "Loading default discount rules." + System.lineSeparator();
+	private static final String MSG_DISPLAY_TOTAL = "New Total (including %s discount): %s";
 	private static final String MSG_SCAN_ITEM = "Please enter item-name to scan (possible items: %s):";
 	private static final String MSG_CURRENTLY_AVAIL_DISCOUNTS_FOR_ITEMS = "Currently available discount options:%s%s";
 	private static final String MSG_GENERAL_PERCENTAGE_DISCOUNT = "Do you want to offer a general percentage discount for all items without special discount offers? [0..100%]";
@@ -42,19 +42,18 @@ public class CheckOutApplication {
 
 		println(String.format(MSG_INIT_ITEMS, STORE_FILE));
 
+		// Load store items/prices from json configuration file
 		final CheckOutModel model = new GsonBuilder().setPrettyPrinting().create().fromJson(
 				IOUtils.toString(CheckOutApplication.class.getResourceAsStream(STORE_FILE), "cp1252"),
 				CheckOutModel.class);
 		final ItemRepository itemRepository = ItemRepository.fromModel(model);
 
 		try (Scanner scanner = new Scanner(System.in)) {
-
 			// Do we offer a general percentage discount? If yes, we need to initialize
 			// another default discount strategy
 			BigDecimal defaultPercentageDiscount = BigDecimal
 					.valueOf(Double.parseDouble(prompt(scanner, MSG_GENERAL_PERCENTAGE_DISCOUNT)) / 100.0);
-			IDiscountRule defaultDiscountRule = BigDecimal.ZERO.equals(defaultPercentageDiscount) ? new NoDiscountRule()
-					: new PercentageDiscountRule(defaultPercentageDiscount);
+			IDiscountRule defaultDiscountRule = initDefaultDiscount(defaultPercentageDiscount);
 
 			println(MSG_INIT_DISCOUNT_RULES);
 
@@ -62,8 +61,9 @@ public class CheckOutApplication {
 			println(String.format(MSG_CURRENTLY_AVAIL_DISCOUNTS_FOR_ITEMS, System.lineSeparator(),
 					String.valueOf(discountRules)));
 
+			// continuously prompt items-names to be scanned until user returns empty
+			// item-name
 			final CheckOut checkOut = new CheckOut(itemRepository, discountRules);
-
 			boolean continueUserPrompt = true;
 			while (continueUserPrompt) {
 				String itemName = prompt(scanner,
@@ -72,9 +72,17 @@ public class CheckOutApplication {
 				continueUserPrompt = StringUtils.isNotBlank(itemName);
 				checkOut.scan(ItemIdentity.of(itemName));
 
-				println(String.format(MSG_DISPLAY_TOTAL, String.valueOf(checkOut.getTotal())));
+				println(String.format(MSG_DISPLAY_TOTAL, checkOut.getDiscountWithCurrency(),
+						checkOut.getTotalWithCurrency()));
 			}
 		}
+	}
+
+	private static IDiscountRule initDefaultDiscount(BigDecimal defaultPercentageDiscount) {
+		IDiscountRule defaultDiscountRule = defaultPercentageDiscount.compareTo(BigDecimal.ZERO) == 0
+				? new NoDiscountRule()
+				: new PercentageDiscountRule(defaultPercentageDiscount);
+		return defaultDiscountRule;
 	}
 
 	private static DiscountRuleRepository initDiscounts(final CheckOutModel model, IDiscountRule defaultDiscountRule) {

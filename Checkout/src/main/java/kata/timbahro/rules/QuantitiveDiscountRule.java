@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import kata.timbahro.model.Item;
 import kata.timbahro.model.ItemIdentity;
 import kata.timbahro.repository.DiscountRuleRepository;
+import kata.timbahro.util.CurrencyFormatter;
 
 /**
  * Quantitative discount rule which allows to specify discounts based on the
@@ -34,7 +35,7 @@ public class QuantitiveDiscountRule extends IDiscountRule implements IDiscountRu
 	@Override
 	public BigDecimal getDiscount(Item scannedItem) {
 		int scannedItemCounter = ruleRepository.getItemCount(scannedItem.getName());
-		int discountCounter = singleDiscount ? 1 : scannedItemCounter / expectedItemCount;
+		int discountCounter = singleDiscount ? 1 : (scannedItemCounter / expectedItemCount);
 		return scannedItemCounter % expectedItemCount == 0
 				? BigDecimal.valueOf(discountCounter * discount.doubleValue())
 				: BigDecimal.ZERO;
@@ -47,7 +48,8 @@ public class QuantitiveDiscountRule extends IDiscountRule implements IDiscountRu
 
 	@Override
 	public String getDescription() {
-		return String.format("discounts %s EUR for buying %s%s items", String.valueOf(discount),
+		return String.format("discounts %s EUR for buying %s%s items",
+				CurrencyFormatter.formatWithCurrency(discount.doubleValue()),
 				String.valueOf(singleDiscount ? "" : "every"), String.valueOf(expectedItemCount));
 	}
 

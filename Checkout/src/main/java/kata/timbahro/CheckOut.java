@@ -7,9 +7,10 @@ import kata.timbahro.model.Item;
 import kata.timbahro.model.ItemIdentity;
 import kata.timbahro.repository.DiscountRuleRepository;
 import kata.timbahro.repository.ItemRepository;
+import kata.timbahro.util.CurrencyFormatter;
 
 /**
- * Main class for calculating total (including optional discout-rates).
+ * Main class for calculating total amount (including optional discout-rates).
  * 
  * @author tbahro
  */
@@ -37,6 +38,18 @@ public class CheckOut {
 
 	public BigDecimal getTotal() {
 		return total.subtract(discount);
+	}
+
+	public String getTotalWithCurrency() {
+		return CurrencyFormatter.formatWithCurrency(getTotal().doubleValue());
+	}
+
+	public BigDecimal getDiscount() {
+		return discount;
+	}
+
+	public String getDiscountWithCurrency() {
+		return CurrencyFormatter.formatWithCurrency(getDiscount().doubleValue());
 	}
 
 }

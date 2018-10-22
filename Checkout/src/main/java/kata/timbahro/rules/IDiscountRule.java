@@ -6,6 +6,9 @@ import kata.timbahro.model.Item;
 
 public abstract class IDiscountRule {
 
+	/**
+	 * @return discount for scanned item
+	 */
 	public abstract BigDecimal getDiscount(Item scannedItem);
 
 	/**
