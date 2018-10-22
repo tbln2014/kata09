@@ -4,8 +4,13 @@ import java.math.BigDecimal;
 
 import kata.timbahro.model.Item;
 
-public interface IDiscountRule {
+public abstract class IDiscountRule {
 
-	public BigDecimal getDiscount(Item scannedItem);
+	public abstract BigDecimal getDiscount(Item scannedItem);
+
+	/**
+	 * @return null means no discount applicable
+	 */
+	public abstract String getDescription();
 
 }

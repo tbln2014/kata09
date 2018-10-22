@@ -10,11 +10,16 @@ import kata.timbahro.model.Item;
  * 
  * @author tbahro
  */
-public class NoDiscountRule implements IDiscountRule {
+public class NoDiscountRule extends IDiscountRule {
 
 	@Override
 	public BigDecimal getDiscount(Item scannedItem) {
 		return BigDecimal.ZERO;
+	}
+
+	@Override
+	public String getDescription() {
+		return null;
 	}
 
 }

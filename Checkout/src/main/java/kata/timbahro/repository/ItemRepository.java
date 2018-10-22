@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.Validate;
 
+import kata.timbahro.model.CheckOutModel;
 import kata.timbahro.model.Item;
 import kata.timbahro.model.ItemIdentity;
 
@@ -15,8 +16,9 @@ import kata.timbahro.model.ItemIdentity;
  * 
  * @author tbahro
  */
-public class ItemRepository /** implements CrudRepository<Item, ItemIdentity> */
-{
+
+/** implements CrudRepository<Item, ItemIdentity> */
+public class ItemRepository {
 
 	public static final String ERR_UNIT_ALREADY_IN_STORAGE = "Given item (%s) can't be added to item storage because it is already present.";
 
@@ -35,6 +37,12 @@ public class ItemRepository /** implements CrudRepository<Item, ItemIdentity> */
 
 	public boolean existsById(ItemIdentity id) {
 		return null != itemStorage.get(id);
+	}
+
+	public static ItemRepository fromModel(final CheckOutModel model) {
+		ItemRepository items = new ItemRepository();
+		model.getCashableItems().forEach(i -> items.save(i));
+		return items;
 	}
 
 }

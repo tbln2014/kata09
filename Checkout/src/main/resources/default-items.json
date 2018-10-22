@@ -1,0 +1,42 @@
+{
+  "knownItems": [
+    {
+      "name": "A"
+    },
+    {
+      "name": "B"
+    },
+    {
+      "name": "C"
+    },
+    {
+      "name": "D"
+    }
+  ],
+  "cashableItems": [
+    {
+      "name": {
+        "name": "A"
+      },
+      "price": 50.0
+    },
+    {
+      "name": {
+        "name": "B"
+      },
+      "price": 30.0
+    },
+    {
+      "name": {
+        "name": "C"
+      },
+      "price": 20.0
+    },
+    {
+      "name": {
+        "name": "D"
+      },
+      "price": 15.0
+    }
+  ]
+}

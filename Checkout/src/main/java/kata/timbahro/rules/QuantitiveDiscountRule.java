@@ -18,7 +18,7 @@ import kata.timbahro.repository.DiscountRuleRepository;
  * 
  * @author tbahro
  */
-public class QuantitiveDiscountRule implements IDiscountRule, IDiscountRuleRepositoryAware {
+public class QuantitiveDiscountRule extends IDiscountRule implements IDiscountRuleRepositoryAware {
 
 	private int expectedItemCount;
 	private BigDecimal discount;
@@ -43,6 +43,12 @@ public class QuantitiveDiscountRule implements IDiscountRule, IDiscountRuleRepos
 	@Override
 	public void setDiscountRuleRepository(DiscountRuleRepository ruleRepository) {
 		this.ruleRepository = ruleRepository;
+	}
+
+	@Override
+	public String getDescription() {
+		return String.format("discounts %s EUR for buying %s%s items", String.valueOf(discount),
+				String.valueOf(singleDiscount ? "" : "every"), String.valueOf(expectedItemCount));
 	}
 
 }

@@ -1,14 +1,18 @@
 package kata.timbahro.repository;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
 import kata.timbahro.model.Item;
+import kata.timbahro.model.ItemDiscount;
 import kata.timbahro.model.ItemIdentity;
 import kata.timbahro.rules.IDiscountRule;
 import kata.timbahro.rules.IDiscountRuleRepositoryAware;
@@ -16,8 +20,8 @@ import kata.timbahro.rules.IDiscountRuleRepositoryAware;
 public class DiscountRuleRepository {
 
 	private static final String ERR_ONLY_ONE_DISCOUNT_PER_ITEM = "Only one discount-option per item allowed.";
-	private Map<ItemIdentity, IDiscountRule> activeDiscounts = new LinkedHashMap<>();
-	private Map<ItemIdentity, AtomicInteger> itemsCounted = new HashMap<>();
+	private transient Map<ItemIdentity, AtomicInteger> itemsCounted = new HashMap<>();
+	private List<ItemDiscount> activeDiscounts = new ArrayList<>();
 	private IDiscountRule defaultRule;
 
 	public DiscountRuleRepository(IDiscountRule defaultRule) {
@@ -27,16 +31,18 @@ public class DiscountRuleRepository {
 	public BigDecimal getDiscountForItem(Item item) {
 		incrementScannedItems(item.getName());
 
-		IDiscountRule discountOption = activeDiscounts.get(item.getName());
-		return discountOption == null ? defaultRule.getDiscount(item) : discountOption.getDiscount(item);
+		Optional<ItemDiscount> discountOption = activeDiscounts.stream().filter(d -> d.getItem().equals(item.getName()))
+				.findFirst();
+		return discountOption.isPresent() ? discountOption.get().getDiscount().getDiscount(item)
+				: defaultRule.getDiscount(item);
 	}
 
-	public void save(ItemIdentity item, IDiscountRule discountStrategyForItem) {
-		Validate.isTrue(activeDiscounts.get(item) == null, ERR_ONLY_ONE_DISCOUNT_PER_ITEM);
-		if (discountStrategyForItem instanceof IDiscountRuleRepositoryAware) {
-			((IDiscountRuleRepositoryAware) discountStrategyForItem).setDiscountRuleRepository(this);
+	public void save(ItemDiscount discountItem) {
+		Validate.isTrue(!activeDiscounts.contains(discountItem), ERR_ONLY_ONE_DISCOUNT_PER_ITEM);
+		if (discountItem.getDiscount() instanceof IDiscountRuleRepositoryAware) {
+			((IDiscountRuleRepositoryAware) discountItem.getDiscount()).setDiscountRuleRepository(this);
 		}
-		activeDiscounts.put(item, discountStrategyForItem);
+		activeDiscounts.add(discountItem);
 	}
 
 	public int getItemCount(ItemIdentity item) {
@@ -46,6 +52,21 @@ public class DiscountRuleRepository {
 	private void incrementScannedItems(ItemIdentity scannedItem) {
 		itemsCounted.compute(scannedItem,
 				(key, value) -> value == null ? new AtomicInteger(1) : new AtomicInteger(value.addAndGet(1)));
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer toString = new StringBuffer();
+		String defaultDiscount = defaultRule.toString();
+		if (StringUtils.isNotBlank(defaultDiscount)) {
+			toString.append(String.format(
+					"Default discount option currently avaiable for all items without special discout offers!%s%s",
+					System.lineSeparator(), String.valueOf(defaultDiscount)));
+		}
+		activeDiscounts.stream()
+				.forEach(d -> toString.append(String.format("Active discount for item %s (discount option: %s)",
+						d.getItem().getName(), d.getDiscount().getDescription()) + System.lineSeparator()));
+		return toString.toString();
 	}
 
 }

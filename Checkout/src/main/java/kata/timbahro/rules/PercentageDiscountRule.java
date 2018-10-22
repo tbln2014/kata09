@@ -9,7 +9,7 @@ import kata.timbahro.model.Item;
  * 
  * @author tbahro
  */
-public class PercentageDiscountRule implements IDiscountRule {
+public class PercentageDiscountRule extends IDiscountRule {
 
 	private BigDecimal percentageDiscount;
 
@@ -20,6 +20,11 @@ public class PercentageDiscountRule implements IDiscountRule {
 	@Override
 	public BigDecimal getDiscount(Item scannedItem) {
 		return BigDecimal.valueOf(scannedItem.getPrice().doubleValue() * (percentageDiscount.doubleValue()));
+	}
+
+	@Override
+	public String getDescription() {
+		return String.format("discounts %s percent of item", String.valueOf(percentageDiscount));
 	}
 
 }

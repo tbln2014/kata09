@@ -2,13 +2,19 @@ package kata.timbahro;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import kata.timbahro.model.Item;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+
+import kata.timbahro.model.CheckOutModel;
+import kata.timbahro.model.ItemDiscount;
 import kata.timbahro.model.ItemIdentity;
 import kata.timbahro.repository.DiscountRuleRepository;
 import kata.timbahro.repository.ItemRepository;
@@ -24,17 +30,13 @@ public class CheckOutTest {
 
 	private final ItemIdentity itemA = ItemIdentity.of("A");
 	private final ItemIdentity itemB = ItemIdentity.of("B");
-	private final ItemIdentity itemC = ItemIdentity.of("C");
-	private final ItemIdentity itemD = ItemIdentity.of("D");
 	private ItemRepository itemRepository;
 
 	@Before
-	public void setup() {
-		itemRepository = new ItemRepository();
-		itemRepository.save(Item.builder().name(itemA).price(BigDecimal.valueOf(50.0)).build());
-		itemRepository.save(Item.builder().name(itemB).price(BigDecimal.valueOf(30.0)).build());
-		itemRepository.save(Item.builder().name(itemC).price(BigDecimal.valueOf(20.0)).build());
-		itemRepository.save(Item.builder().name(itemD).price(BigDecimal.valueOf(15.0)).build());
+	public void setup() throws JsonSyntaxException, IOException {
+		itemRepository = ItemRepository.fromModel(new GsonBuilder().setPrettyPrinting().create().fromJson(
+				IOUtils.toString(this.getClass().getResourceAsStream("/default-items.json"), "cp1252"),
+				CheckOutModel.class));
 	}
 
 	@Test
@@ -42,7 +44,6 @@ public class CheckOutTest {
 
 		// test & verify
 		assertEquals(BigDecimal.valueOf(0), price(""));
-		assertEquals(BigDecimal.valueOf(260.0), price("AAAAAA"));
 		assertEquals(BigDecimal.valueOf(50.0), price("A"));
 		assertEquals(BigDecimal.valueOf(80.0), price("AB"));
 		assertEquals(BigDecimal.valueOf(115.0), price("CDBA"));
@@ -64,8 +65,10 @@ public class CheckOutTest {
 
 		// prepare
 		DiscountRuleRepository discountRules = new DiscountRuleRepository(new NoDiscountRule());
-		discountRules.save(itemA, new QuantitiveDiscountRule(3, true, BigDecimal.valueOf(20.0)));
-		discountRules.save(itemB, new QuantitiveDiscountRule(2, true, BigDecimal.valueOf(15.0)));
+		discountRules.save(ItemDiscount.builder().item(itemA)
+				.discount(new QuantitiveDiscountRule(3, true, BigDecimal.valueOf(20.0))).build());
+		discountRules.save(ItemDiscount.builder().item(itemB)
+				.discount(new QuantitiveDiscountRule(2, true, BigDecimal.valueOf(15.0))).build());
 
 		final CheckOut classUnderTest = new CheckOut(itemRepository, discountRules);
 
@@ -98,8 +101,10 @@ public class CheckOutTest {
 	private Object price(String toScan) {
 
 		DiscountRuleRepository discountRules = new DiscountRuleRepository(new NoDiscountRule());
-		discountRules.save(itemA, new QuantitiveDiscountRule(3, true, BigDecimal.valueOf(20.0)));
-		discountRules.save(itemB, new QuantitiveDiscountRule(2, true, BigDecimal.valueOf(15.0)));
+		discountRules.save(ItemDiscount.builder().item(itemA)
+				.discount(new QuantitiveDiscountRule(3, true, BigDecimal.valueOf(20.0))).build());
+		discountRules.save(ItemDiscount.builder().item(itemB)
+				.discount(new QuantitiveDiscountRule(2, true, BigDecimal.valueOf(15.0))).build());
 
 		final CheckOut classUnderTest = new CheckOut(itemRepository, discountRules);
 		Arrays.stream(toScan.split("")).forEach((c) -> classUnderTest.scan(ItemIdentity.of(c)));
