@@ -27,8 +27,10 @@ import kata.timbahro.rules.IDiscountRuleRepositoryAware;
  */
 public class DiscountRuleRepository {
 
+	private static final String NEWLINE = System.lineSeparator();
+	private static final String SEPR = StringUtils.repeat('-', 91);
 	private static final String MSG_SINGLE_DISCOUNT = "Active discount for item %s (discount option: %s)";
-	private static final String MSG_DEFAULT_DISCOUNT_AVAILABLE = "Default discount option currently avaiable for all items without special discout offers!%s%s%s";
+	private static final String MSG_DEFAULT_DISCOUNT_AVAILABLE = "%sDefault discount option currently available for all items without special discout offers!%s%s%s";
 	private static final String ERR_ONLY_ONE_DISCOUNT_PER_ITEM = "Only one discount-option per item allowed.";
 	private transient Map<ItemIdentity, AtomicInteger> itemsCounted = new HashMap<>();
 	private List<ItemDiscount> activeDiscounts = new ArrayList<>();
@@ -64,18 +66,20 @@ public class DiscountRuleRepository {
 				(key, value) -> value == null ? new AtomicInteger(1) : new AtomicInteger(value.addAndGet(1)));
 	}
 
+	/**
+	 * Displays currently active default and special item discount options.
+	 */
 	@Override
 	public String toString() {
 		StringBuffer toString = new StringBuffer();
 		String defaultDiscount = defaultRule.getDescription();
 		if (StringUtils.isNotBlank(defaultDiscount)) {
-			toString.append(String.format(MSG_DEFAULT_DISCOUNT_AVAILABLE, System.lineSeparator(),
-					String.valueOf(defaultDiscount), System.lineSeparator()));
+			toString.append(String.format(MSG_DEFAULT_DISCOUNT_AVAILABLE, SEPR + NEWLINE, NEWLINE,
+					String.valueOf(defaultDiscount) + NEWLINE, SEPR + NEWLINE, NEWLINE));
 		}
-		activeDiscounts.stream()
-				.forEach(d -> toString.append(
-						String.format(MSG_SINGLE_DISCOUNT, d.getItem().getName(), d.getDiscount().getDescription())
-								+ System.lineSeparator()));
+		activeDiscounts.stream().forEach(d -> toString.append(
+				String.format(MSG_SINGLE_DISCOUNT, d.getItem().getName(), d.getDiscount().getDescription()) + NEWLINE));
+		toString.append(SEPR + NEWLINE);
 		return toString.toString();
 	}
 

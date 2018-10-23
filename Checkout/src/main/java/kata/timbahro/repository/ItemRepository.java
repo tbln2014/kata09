@@ -28,7 +28,7 @@ public class ItemRepository {
 		return Optional.ofNullable(itemStorage.get(id));
 	}
 
-	public <S extends Item> S save(S entity) {
+	public Item save(Item entity) {
 		ItemIdentity key = entity.getName();
 		Validate.isTrue(!existsById(key), String.format(ERR_UNIT_ALREADY_IN_STORAGE, key));
 		itemStorage.computeIfAbsent(key, v -> entity);

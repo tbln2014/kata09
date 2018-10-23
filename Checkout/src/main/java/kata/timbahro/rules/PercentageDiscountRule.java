@@ -11,6 +11,7 @@ import kata.timbahro.model.Item;
  */
 public class PercentageDiscountRule extends IDiscountRule {
 
+	private static final String DESCRIPTION = "- Discounts %s percent";
 	private BigDecimal percentageDiscount;
 
 	public PercentageDiscountRule(BigDecimal percentageDiscount) {
@@ -24,7 +25,7 @@ public class PercentageDiscountRule extends IDiscountRule {
 
 	@Override
 	public String getDescription() {
-		return String.format("discounts %s percent of item", String.valueOf(percentageDiscount));
+		return String.format(DESCRIPTION, String.valueOf(percentageDiscount.multiply(BigDecimal.valueOf(100.0))));
 	}
 
 }

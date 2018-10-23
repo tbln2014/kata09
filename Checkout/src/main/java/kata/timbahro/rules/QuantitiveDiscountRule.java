@@ -23,6 +23,8 @@ import kata.timbahro.util.CurrencyFormatter;
  */
 public class QuantitiveDiscountRule extends IDiscountRule implements IDiscountRuleRepositoryAware {
 
+	private static final String DESCRIPTION = "- Discounts %s EUR for buying %s%s items";
+
 	public static final String ERR_ITEM_WAS_NOT_SCANNED = "No item was scanned yet. This might be caused by wrong implementation.";
 
 	private int expectedItemCount;
@@ -54,8 +56,7 @@ public class QuantitiveDiscountRule extends IDiscountRule implements IDiscountRu
 
 	@Override
 	public String getDescription() {
-		return String.format("discounts %s EUR for buying %s%s items",
-				CurrencyFormatter.formatWithCurrency(discount.doubleValue()),
+		return String.format(DESCRIPTION, CurrencyFormatter.formatWithCurrency(discount.doubleValue()),
 				String.valueOf(singleDiscount ? "" : "every"), String.valueOf(expectedItemCount));
 	}
 
